@@ -1,0 +1,46 @@
+x-pgbouncer: &pgbouncer_base
+  image: bitnami/pgbouncer:latest
+  user: root
+  environment:
+    # DB configs
+    POSTGRESQL_PASSWORD: FAKE-PASSWORD
+    POSTGRESQL_DATABASE: ${POSTGRESQL_DATABASE?error}
+    POSTGRESQL_HOST: ${POSTGRESQL_HOST?error}
+    POSTGRESQL_PORT: ${POSTGRESQL_PORT:-5432}
+    # Pgboucner congis
+    PGBOUNCER_PORT: 5432
+    PGBOUNCER_DATABASE: ${PGBOUNCER_DATABASE?error}
+    PGBOUNCER_AUTH_TYPE: md5
+    # https://github.com/Athou/commafeed/issues/559
+    PGBOUNCER_MAX_CLIENT_CONN: 60
+    PGBOUNCER_IGNORE_STARTUP_PARAMETERS: extra_float_digits
+    # RDS TLS
+    PGBOUNCER_SERVER_TLS_SSLMODE: verify-ca
+    PGBOUNCER_SERVER_TLS_CA_FILE: /certs/source-cert.pem
+    # PGBouncer TLS
+    PGBOUNCER_CLIENT_TLS_SSLMODE: verify-full
+    PGBOUNCER_CLIENT_TLS_CERT_FILE: /certs/proxy-cert.pem
+    PGBOUNCER_CLIENT_TLS_KEY_FILE: /certs/proxy-key.pem
+    PGBOUNCER_CLIENT_TLS_CA_FILE: /certs/clients-cert.pem
+  extra_hosts:
+      - "host.docker.internal:host-gateway"
+  restart: unless-stopped
+  logging: &pgbouncer_base_logging
+    driver: syslog
+    options: &pgbouncer_base_logging_options
+      "syslog-facility": "daemon"
+
+services:
+  pgbouncer:
+    <<: *pgbouncer_base
+    volumes:
+      - ./certs/:/certs/:ro
+      # Custom
+      - ./conf:/bitnami/pgbouncer/conf/
+    logging:
+      <<: *pgbouncer_base_logging
+      options:
+        <<: *pgbouncer_base_logging_options
+        tag: docker-pgbouncer
+    ports:
+      - "${PGBOUNCER_PORT:-5432}:5432"
