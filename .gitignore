@@ -1,3 +1,4 @@
 certs/
+client-certs/
 conf
 .env

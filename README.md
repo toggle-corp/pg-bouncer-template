@@ -22,19 +22,19 @@ Create user in database
 
 ```sql
 -- Create a group
-CREATE ROLE readaccess;
+CREATE ROLE full_readaccess;
 
 -- Grant access to existing tables
-GRANT USAGE ON SCHEMA public TO readaccess;
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO readaccess;
+GRANT USAGE ON SCHEMA public TO full_readaccess;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO full_readaccess;
 
 -- Grant access to future tables
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO readaccess;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO full_readaccess;
 
 -- Create a final user with password
 CREATE USER user_name WITH PASSWORD 'random_password';
 -- ALTER USER user_name WITH PASSWORD 'random_password';
-GRANT readaccess TO user_name;
+GRANT full_readaccess TO user_name;
 ```
 
 ---
