@@ -1,4 +1,5 @@
 certs/
 client-certs/
 conf
-.env
+.env*
+!.env.sample
