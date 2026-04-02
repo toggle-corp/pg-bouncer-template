@@ -1,0 +1,16 @@
+name: Pre-commit
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
+jobs:
+  pre_commit_checks:
+    name: Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@main
+      - uses: pre-commit/action@main

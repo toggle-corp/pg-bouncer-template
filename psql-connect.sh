@@ -6,6 +6,7 @@ if [ -z "$1" ]; then
 else
     echo "Using env file: $1"
     set -o allexport
+    # shellcheck source=.env.sample
     source "$1" set
     set +o allexport
 fi
