@@ -91,9 +91,17 @@ generate_certificate() {
 
     years=$(echo "scale=1; $days / 365" | bc)
 
+    # Detect if CN is an IP address or a domain
+    if [[ "$cn" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        san="IP:$cn"
+    else
+        san="DNS:$cn"
+    fi
+
     echo >&2
     echo_bold  "🔐 Generating self-signed certificate..."
     echo_value "CN"        "$cn"
+    echo_value "SAN"       "$san"
     echo_value "Valid for" "$days days (~${years} years)"
     echo >&2
 
@@ -112,7 +120,8 @@ generate_certificate() {
         -keyout "$KEY_FILE" \
         -out "$CERT_FILE" \
         -days "$days" \
-        -subj "/CN=$cn"
+        -subj "/CN=$cn" \
+        -addext "subjectAltName=$san"
     { set +x; } 2>/dev/null
     chmod 600 "$CERT_FILE" "$KEY_FILE"
 
